@@ -1,6 +1,15 @@
+"""
+Adam Abdel-Latif and Salman Asif
+DS442
+Project 1
+Solution to Question 3
+"""
+
+
 import heapq
 from itertools import count
-from solution_q2 import read_initial_state, successors, move_cost
+from solution_q2 import (read_initial_state, successors, move_cost,
+                         reconstruct, display_state)
 
 
 def heuristic(state, number):
@@ -9,23 +18,13 @@ def heuristic(state, number):
     if number == 1:
         return remaining_weight
     if number == 2:
-        return (remaining_weight + 2) // 3  
-    if number == 3:
-        remaining_people = m_left + c_left
-        if remaining_people == 0:
-            return 0
-        minimum_returns = (max(0, remaining_people - 2) if boat == "L"
-                           else remaining_people)
-        return remaining_weight + 2 * minimum_returns
-    raise ValueError("Heuristic has to be 1, 2, or 3")
-
-
-def reconstruct(parents, state):
-    path = []
-    while state is not None:
-        path.append(state)
-        state = parents[state]
-    return path[::-1]
+        return (remaining_weight + 2) // 3
+    remaining_people = m_left + c_left
+    if remaining_people == 0:
+        return 0
+    minimum_returns = (max(0, remaining_people - 2) if boat == "L"
+                       else remaining_people)
+    return remaining_weight + 2 * minimum_returns
 
 
 def astar(start, number):
@@ -56,10 +55,12 @@ def astar(start, number):
 
 def display_result(number, path, cost, expansions):
     print("The solution of Q3.1 (Heuristic " + str(number) + ") is:")
-    print("Solution Path: " + (" -> ".join(
-        "(" + ", ".join(map(str, state)) + ")" for state in path)
-                               if path else "No solution"))
-    print("Total cost = " + (str(cost) if cost is not None else "N/A"))
+    if path:
+        print("Solution Path: " + " -> ".join(map(display_state, path)))
+        print("Total cost = " + str(cost))
+    else:
+        print("Solution Path: No solution")
+        print("Total cost = N/A")
     print("Number of node expansions = " + str(expansions))
 
 
