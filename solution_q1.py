@@ -1,3 +1,11 @@
+"""
+Adam Abdel-Latif and Salman Asif
+DS442
+Project 1
+Solution to Question 1
+"""
+
+
 from collections import deque
 
 
@@ -16,8 +24,8 @@ def read_initial_state(filename="input.txt"):
 
 
 def valid(state):
-    m_left, c_left, m_right, c_right, boat = state
-    return (boat in ("L", "R") and all(n >= 0 for n in state[:4])
+    m_left, c_left, m_right, c_right = state[:4]
+    return (all(n >= 0 for n in state[:4])
             and (m_left == 0 or m_left >= c_left) and (m_right == 0 or m_right >= c_right))
 
 
@@ -25,13 +33,9 @@ def successors(state):
     m_left, c_left, m_right, c_right, boat = state
     for missionaries, cannibals in MOVES:
         if boat == "L":
-            if m_left < missionaries or c_left < cannibals:
-                continue
             next_state = (m_left - missionaries, c_left - cannibals,
                           m_right + missionaries, c_right + cannibals, "R")
         else:
-            if m_right < missionaries or c_right < cannibals:
-                continue
             next_state = (m_left + missionaries, c_left + cannibals,
                           m_right - missionaries, c_right - cannibals, "L")
         if valid(next_state):
@@ -54,7 +58,7 @@ def bfs(start):
     total_m, total_c = start[0] + start[2], start[1] + start[3]
     frontier = deque([start])
     parents = {start: None}
-    expansions = 0  # Add one each time we explore a state’s possible moves.
+    expansions = 0
     while frontier:
         state = frontier.popleft()
         if goal(state, total_m, total_c):
@@ -77,6 +81,7 @@ def dfs(start):
         if goal(state, total_m, total_c):
             return reconstruct(parents, state), expansions
         expansions += 1
+        # push in reverse so the stack pops moves in MOVES order
         for next_state in reversed(tuple(successors(state))):
             if next_state not in parents:
                 parents[next_state] = state
