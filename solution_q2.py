@@ -18,24 +18,20 @@ def read_initial_state(filename="input.txt"):
 
 
 def valid(state):
-    ml, cl, mr, cr, boat = state
-    return (boat in ("L", "R") and all(n >= 0 for n in state[:4])
-            and (ml == 0 or ml >= cl) and (mr == 0 or mr >= cr))
+    m_left, c_left, m_right, c_right = state[:4]
+    return (all(n >= 0 for n in state[:4])
+            and (m_left == 0 or m_left >= c_left) and (m_right == 0 or m_right >= c_right))
 
 
 def successors(state):
-    ml, cl, mr, cr, boat = state
+    m_left, c_left, m_right, c_right, boat = state
     for missionaries, cannibals in MOVES:
         if boat == "L":
-            if ml < missionaries or cl < cannibals:
-                continue
-            next_state = (ml - missionaries, cl - cannibals,
-                          mr + missionaries, cr + cannibals, "R")
+            next_state = (m_left - missionaries, c_left - cannibals,
+                          m_right + missionaries, c_right + cannibals, "R")
         else:
-            if mr < missionaries or cr < cannibals:
-                continue
-            next_state = (ml + missionaries, cl + cannibals,
-                          mr - missionaries, cr - cannibals, "L")
+            next_state = (m_left + missionaries, c_left + cannibals,
+                          m_right - missionaries, c_right - cannibals, "L")
         if valid(next_state):
             yield next_state, missionaries, cannibals
 
@@ -43,9 +39,7 @@ def successors(state):
 def move_cost(state, missionaries_on_boat, cannibals_on_boat, model):
     if model == "A":
         return 2 * missionaries_on_boat + cannibals_on_boat
-    if model == "B":
-        return 2 if state[4] == "L" else 1
-    raise ValueError("Choose cost model A or B")
+    return 2 if state[4] == "L" else 1
 
 
 def reconstruct(parents, state):
@@ -82,12 +76,18 @@ def ucs(start, model):
     return None, None, expansions
 
 
+def display_state(state):
+    return "(" + ", ".join(map(str, state)) + ")"
+
+
 def display_result(model, path, cost, expansions):
     print("The solution of Q2.1 (UCS, cost model " + model + ") is:")
-    print("Solution Path: " + (" -> ".join(
-        "(" + ", ".join(map(str, state)) + ")" for state in path)
-                               if path else "No solution"))
-    print("Total cost = " + (str(cost) if cost is not None else "N/A"))
+    if path:
+        print("Solution Path: " + " -> ".join(map(display_state, path)))
+        print("Total cost = " + str(cost))
+    else:
+        print("Solution Path: No solution")
+        print("Total cost = N/A")
     print("Number of node expansions = " + str(expansions))
 
 
