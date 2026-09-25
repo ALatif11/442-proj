@@ -1,3 +1,11 @@
+"""
+Adam Abdel-Latif and Salman Asif
+DS442
+Project 1
+Solution to Question 2
+"""
+
+
 import heapq
 import sys
 from itertools import count
