@@ -18,7 +18,7 @@ def read_initial_state(filename="input.txt"):
     with open(filename, encoding="utf-8") as input_file:
         parts = [part.strip() for part in input_file.read().strip().split(",")]
     if len(parts) != 5 or parts[4].upper() not in ("L", "R"):
-        raise ValueError("Expected M_left,C_left,M_right,C_right,L_or_R")
+        raise ValueError("Input must look like 3, 3, 0, 0, L")
     state = tuple(int(part) for part in parts[:4]) + (parts[4].upper(),)
     if not valid(state):
         raise ValueError("Initial state violates the puzzle rules")

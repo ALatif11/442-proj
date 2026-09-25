@@ -42,10 +42,6 @@ def successors(state):
             yield next_state
 
 
-def goal(state, total_m, total_c):
-    return state == (0, 0, total_m, total_c, "R")
-
-
 def reconstruct(parents, state):
     path = []
     while state is not None:
@@ -56,12 +52,13 @@ def reconstruct(parents, state):
 
 def bfs(start):
     total_m, total_c = start[0] + start[2], start[1] + start[3]
+    goal = (0, 0, total_m, total_c, "R")
     frontier = deque([start])
     parents = {start: None}
     expansions = 0
     while frontier:
         state = frontier.popleft()
-        if goal(state, total_m, total_c):
+        if state == goal:
             return reconstruct(parents, state), expansions
         expansions += 1
         for next_state in successors(state):
@@ -73,12 +70,13 @@ def bfs(start):
 
 def dfs(start):
     total_m, total_c = start[0] + start[2], start[1] + start[3]
+    goal = (0, 0, total_m, total_c, "R")
     stack = [start]
     parents = {start: None}
     expansions = 0
     while stack:
         state = stack.pop()
-        if goal(state, total_m, total_c):
+        if state == goal:
             return reconstruct(parents, state), expansions
         expansions += 1
         # push in reverse so the stack pops moves in MOVES order
@@ -95,9 +93,12 @@ def display_state(state):
 
 def display_result(label, path, expansions):
     print("The solution of " + label + " is:")
-    print("Solution Path: " + (" -> ".join(map(display_state, path))
-                               if path else "No solution"))
-    print("Total cost = " + (str(len(path) - 1) if path else "N/A"))
+    if path:
+        print("Solution Path: " + " -> ".join(map(display_state, path)))
+        print("Total cost = " + str(len(path) - 1))
+    else:
+        print("Solution Path: No solution")
+        print("Total cost = N/A")
     print("Number of node expansions = " + str(expansions))
 
 
